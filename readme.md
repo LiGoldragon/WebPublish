@@ -114,6 +114,10 @@ produce-spores | nix run .#mycelia-spore --
 nix develop
 ```
 
+The Nix dev shell also bundles `rust-analyzer`, so editors using Eglot
+or `lsp-mode` can offer completions and diagnostics without additional
+setup.
+
 Inside the dev shell:
 
 ```sh
