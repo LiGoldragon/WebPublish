@@ -128,6 +128,25 @@ cargo test
 Nix can also provide `wrangler` and other runtime tools required by
 specific hosting backends.
 
+## Development environment
+
+This repository provides a flake-based dev shell.
+
+- To enter the shell manually:
+  - `nix develop` (in the project root)
+
+- With `direnv` + `nix-direnv`:
+  - Install `direnv` and `nix-direnv`.
+  - Run `direnv allow` once in the project root.
+  - The environment will auto-activate when entering the directory.
+
+- With Emacs `envrc`:
+  - Install the `envrc` package.
+  - Run `direnv allow` once in the project root so the environment can
+    be loaded.
+  - Enable `envrc-mode` in project buffers to load the environment from
+    `.envrc`.
+
 ## Building without Nix
 
 Nix is preferred but not strictly required.

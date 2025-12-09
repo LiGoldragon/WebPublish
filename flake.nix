@@ -37,6 +37,8 @@
           packages = [
             pkgs.capnproto
             pkgs.cargo
+            pkgs.git
+            pkgs.nixpkgs-fmt
             pkgs.rustc
             pkgs.rust-analyzer
           ];
