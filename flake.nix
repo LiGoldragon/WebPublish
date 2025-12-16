@@ -1,5 +1,5 @@
 {
-  description = "Mycelia Spore Rust daemon";
+  description = "WebPublish Rust daemon";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
@@ -16,21 +16,21 @@
         src = craneLib.cleanCargoSource ./.;
 
         commonArgs = {
-          pname = "mycelia-spore";
+          pname = "webpublish";
           version = "0.1.0";
           inherit src;
           nativeBuildInputs = [ pkgs.capnproto ];
         };
 
-        myceliaSpore = craneLib.buildPackage commonArgs;
+        webpublish = craneLib.buildPackage commonArgs;
       in {
         packages = {
-          default = myceliaSpore;
-          mycelia-spore = myceliaSpore;
+          default = webpublish;
+          webpublish = webpublish;
         };
 
         apps.default = flake-utils.lib.mkApp {
-          drv = myceliaSpore;
+          drv = webpublish;
         };
 
         devShells.default = pkgs.mkShell {

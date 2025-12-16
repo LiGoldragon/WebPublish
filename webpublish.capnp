@@ -2,8 +2,8 @@
 
 using Rust = import "rust.capnp";
 
-$Rust.module("spore_capnp");
-# Generated Rust code will live under the `spore_capnp` module.
+$Rust.module("webpublish_capnp");
+# Generated Rust code will live under the `webpublish_capnp` module.
 
 ###############################################################################
 # CORE CONCEPTS
@@ -155,7 +155,7 @@ struct DomainAcquisitionInstruction {
 # ROOT CONFIGURATION
 ###############################################################################
 
-struct SporeConfiguration {
+struct WebPublishConfiguration {
   siteIdentity @0 :SiteIdentity;
   # Identity and declared intent of the site.
 

@@ -1,9 +1,9 @@
 use anyhow::Result;
 
-use crate::model::{HostingAuthorityRole, HostingDesignation, SporeConfiguration};
+use crate::model::{HostingAuthorityRole, HostingDesignation, WebPublishConfiguration};
 
 impl HostingDesignation {
-    pub async fn apply(&self, config: &SporeConfiguration) -> Result<()> {
+    pub async fn apply(&self, config: &WebPublishConfiguration) -> Result<()> {
         let role = match self.authority_role {
             HostingAuthorityRole::DesignatedOrigin => "designated-origin",
             HostingAuthorityRole::DelegatedOrigin => "delegated-origin",

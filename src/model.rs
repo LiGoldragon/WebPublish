@@ -66,7 +66,7 @@ pub struct DomainAcquisitionInstruction {
 }
 
 #[derive(Debug, Clone)]
-pub struct SporeConfiguration {
+pub struct WebPublishConfiguration {
     pub site_identity: SiteIdentity,
     pub deployment_artifact: DeploymentArtifact,
     pub domain_assignment: DomainAssignment,

@@ -1,7 +1,11 @@
 [package]
-name = "mycelia-spore"
+name = "webpublish"
 version = "0.1.0"
 edition = "2024"
+
+[[bin]]
+name = "webpublishd"
+path = "src/main.rs"
 
 [dependencies]
 capnp = "0.18"

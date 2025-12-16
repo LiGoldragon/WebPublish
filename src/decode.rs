@@ -1,15 +1,15 @@
-use anyhow::{Result, anyhow};
+use anyhow::{anyhow, Result};
 use std::io::{self, BufReader};
 
 use capnp::message::ReaderOptions;
 use capnp::serialize_packed;
 
 use crate::model::*;
-use crate::spore_capnp::spore_configuration;
+use crate::webpublish_capnp::web_publish_configuration;
 
 impl SiteIntent {
-    fn from_reader(intent: crate::spore_capnp::site_intent::Reader) -> Result<Self> {
-        use crate::spore_capnp::site_intent::Which;
+    fn from_reader(intent: crate::webpublish_capnp::site_intent::Reader) -> Result<Self> {
+        use crate::webpublish_capnp::site_intent::Which;
         match intent.which()? {
             Which::IdentityIndex(()) => Ok(SiteIntent::IdentityIndex),
             Which::Publication(()) => Ok(SiteIntent::Publication),
@@ -20,8 +20,8 @@ impl SiteIntent {
 }
 
 impl HostingAuthorityRole {
-    fn from_reader(role: crate::spore_capnp::hosting_authority_role::Reader) -> Result<Self> {
-        use crate::spore_capnp::hosting_authority_role::Which;
+    fn from_reader(role: crate::webpublish_capnp::hosting_authority_role::Reader) -> Result<Self> {
+        use crate::webpublish_capnp::hosting_authority_role::Which;
         Ok(match role.which()? {
             Which::DesignatedOrigin(()) => HostingAuthorityRole::DesignatedOrigin,
             Which::DelegatedOrigin(()) => HostingAuthorityRole::DelegatedOrigin,
@@ -32,8 +32,8 @@ impl HostingAuthorityRole {
 }
 
 impl DeploymentArtifactKind {
-    fn from_reader(kind: crate::spore_capnp::deployment_artifact_kind::Reader) -> Result<Self> {
-        use crate::spore_capnp::deployment_artifact_kind::Which;
+    fn from_reader(kind: crate::webpublish_capnp::deployment_artifact_kind::Reader) -> Result<Self> {
+        use crate::webpublish_capnp::deployment_artifact_kind::Which;
         Ok(match kind.which()? {
             Which::StaticContent(()) => DeploymentArtifactKind::StaticContent,
             Which::VersionedStaticContent(()) => DeploymentArtifactKind::VersionedStaticContent,
@@ -42,8 +42,8 @@ impl DeploymentArtifactKind {
     }
 }
 
-impl SporeConfiguration {
-    pub fn from_reader(reader: spore_configuration::Reader) -> Result<Self> {
+impl WebPublishConfiguration {
+    pub fn from_reader(reader: web_publish_configuration::Reader) -> Result<Self> {
         let site_identity_reader = reader.get_site_identity()?;
         let deployment_artifact_reader = reader.get_deployment_artifact()?;
         let domain_assignment_reader = reader.get_domain_assignment()?;
@@ -106,7 +106,7 @@ impl SporeConfiguration {
             None
         };
 
-        Ok(SporeConfiguration {
+        Ok(WebPublishConfiguration {
             site_identity,
             deployment_artifact,
             domain_assignment,
@@ -117,37 +117,37 @@ impl SporeConfiguration {
     }
 }
 
-pub struct SporeStream<R: io::Read> {
+pub struct WebPublishStream<R: io::Read> {
     reader: BufReader<R>,
     opts: ReaderOptions,
 }
 
-impl SporeStream<io::Stdin> {
+impl WebPublishStream<io::Stdin> {
     pub fn from_stdin() -> Self {
         Self::new(io::stdin())
     }
 }
 
-impl<R: io::Read> SporeStream<R> {
+impl<R: io::Read> WebPublishStream<R> {
     pub fn new(reader: R) -> Self {
-        SporeStream {
+        WebPublishStream {
             reader: BufReader::new(reader),
             opts: ReaderOptions::new(),
         }
     }
 }
 
-impl<R: io::Read> Iterator for SporeStream<R> {
-    type Item = Result<SporeConfiguration>;
+impl<R: io::Read> Iterator for WebPublishStream<R> {
+    type Item = Result<WebPublishConfiguration>;
 
     fn next(&mut self) -> Option<Self::Item> {
         match serialize_packed::read_message(&mut self.reader, self.opts) {
             Ok(message) => {
-                let root: spore_configuration::Reader = match message.get_root() {
+                let root: web_publish_configuration::Reader = match message.get_root() {
                     Ok(r) => r,
                     Err(e) => return Some(Err(anyhow!("get_root failed: {e}"))),
                 };
-                Some(SporeConfiguration::from_reader(root))
+                Some(WebPublishConfiguration::from_reader(root))
             }
             Err(e) => {
                 if e.kind() == io::ErrorKind::UnexpectedEof {
