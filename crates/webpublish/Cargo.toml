@@ -1,0 +1,11 @@
+[package]
+name = "webpublish"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+capnp = "0.18"
+thiserror = "1"
+
+[build-dependencies]
+capnpc = "0.18"
