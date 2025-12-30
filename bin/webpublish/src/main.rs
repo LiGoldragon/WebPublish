@@ -3,9 +3,8 @@ use webpublish::{ApplyOutcome, Configuration, StdinBytes};
 fn main() {
     let mut args = std::env::args();
     let _binary = args.next();
-    let command = args.next();
-    if command.as_deref() != Some("apply") || args.next().is_some() {
-        eprintln!("Usage: webpublish apply");
+    if args.next().is_some() {
+        eprintln!("Usage: pipe the webpublish Cap'n Proto message to stdin.");
         std::process::exit(2);
     }
 
@@ -16,6 +15,10 @@ fn main() {
             std::process::exit(1);
         }
     };
+    if stdin_bytes.is_empty() {
+        eprintln!("Usage: pipe the webpublish Cap'n Proto message to stdin.");
+        std::process::exit(2);
+    }
 
     let configuration = match Configuration::from_bytes(stdin_bytes) {
         Ok(configuration) => configuration,
