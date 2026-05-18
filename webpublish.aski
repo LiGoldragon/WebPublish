@@ -1,0 +1,95 @@
+WebPublishConfiguration{
+  :site    SiteIdentity
+  ; Human identity metadata for the site. Not required for the wrangler call
+  ; itself, but useful as a stable internal catalog record.
+
+  :source  GitHubRepositorySource
+  ; The GitHub repository used as the source of truth. Cloudflare Pages will
+  ; clone this repository and perform builds in Cloudflare’s infrastructure.
+
+  :pages   CloudflarePagesProject
+  ; Cloudflare Pages project parameters used for creation / reconciliation.
+
+  :domains DomainBindings
+  ; Optional custom domain bindings applied after the project exists.
+}
+
+SiteIdentity{
+  :stableId    String
+  ; Stable internal identifier for this site.
+  ; Intended invariants:
+  ;   - must not change across redeployments
+  ;   - must not change if domains change
+  ;   - must not change if the Pages project name changes
+
+  :displayName String
+  ; Human-facing descriptive name.
+}
+
+GitHubRepositorySource{
+  :owner      String
+  ; GitHub account or organization name (for <owner>/<repo>).
+
+  :repository String
+  ; GitHub repository name (for <owner>/<repo>).
+}
+
+CloudflarePagesProject{
+  :projectName          String
+  ; Cloudflare Pages project name.
+  ; Notes:
+  ;   - Used as the primary key in many wrangler operations.
+  ;   - Must be unique within the chosen Cloudflare account context.
+
+  :productionBranch     String
+  ; Git branch used by Cloudflare Pages for "production" deployments.
+  ; Common values: "main", "master", "develop".
+
+  :accountId            AccountId
+  ; Cloudflare account selector.
+  ; If absent, wrangler’s currently authenticated account context is used.
+  ; This is sufficient for single-account operators.
+  ; `value` is a Cloudflare Account Identifier (not a secret).
+
+  :buildCommand         String
+  ; Build command executed by Cloudflare Pages in its build environment.
+  ; Important:
+  ;   - Treated as opaque pass-through.
+  ;   - Not executed locally by WebPublish.
+  ; Environment variables like "$CF_PAGES_URL" must remain literal until Cloudflare executes it.
+  ; Convention:
+  ;   - Often a Nix flake build invocation (e.g. "nix build .#pages --print-build-logs").
+
+  :buildOutputDirectory String
+  ; Directory served as the Pages output.
+  ; Interpretation:
+  ;   - Relative to the repository root as seen by Cloudflare Pages.
+  ; Convention:
+  ;   - Often "result" or "result/public" when Nix emits a "result" symlink.
+  ; Note:
+  ;   - Must be a directory path, not a file.
+}
+
+AccountId(
+  absent
+  value<String>
+)
+
+DomainBindings{
+  :primaryDomain    PrimaryDomain
+  ; Optional primary domain binding applied after the project exists.
+  ; `absent` means no primary domain binding requested.
+  ; `domain` is a custom domain like "ligoldragon.com".
+
+  :alternateDomains String*
+  ; Additional domains to attach to the Pages project.
+  ; Example: ["www.ligoldragon.com"]
+  ; Notes:
+  ;   - Ordering is not semantically meaningful.
+  ;   - Idempotency is expected at execution time (already-bound is success).
+}
+
+PrimaryDomain(
+  absent
+  domain<String>
+)
